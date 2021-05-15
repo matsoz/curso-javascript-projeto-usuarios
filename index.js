@@ -3,7 +3,6 @@ var fields = document.querySelectorAll("#form-user-create [name]");
 
 function addLine(dataUser) {
     console.log("addLine" + dataUser);
-    let tr = document.createElement("tr");
 
     /*
      * O uso da crase ``caracteriza a Template String TS,
@@ -11,7 +10,7 @@ function addLine(dataUser) {
      * 
      * A tag ${xxx} configura um trecho de código em meio à Template String TS
      */
-    tr.innerHTML = `<tr>
+    document.getElementById("table-users").innerHTML = `<tr>
                     <td>
                       <img src="dist/img/user1-128x128.jpg" alt="User Image" class="img-circle img-sm">
                     </td>
@@ -25,7 +24,6 @@ function addLine(dataUser) {
                     </td>
                   </tr>`;
 
-    document.getElementById("table-users").appendChild(tr);
 
 }
 
