@@ -21,6 +21,13 @@ class UserController {
 
             let values = this.getValues();
  
+            /* 
+             * Chamada de getPhoto com callback embutida
+             * recebendo um argumento e adicionando linha após fim de execução
+             * 
+             * A callback é passada como parâmetro, e executada quando desejado
+             * Nesse caso, executada no OnLoad, ou seja, após.
+             */
             this.getPhoto((content) => {
 
                 values.photo = content;
@@ -44,6 +51,10 @@ class UserController {
 
         fileReader.onload = () => {
 
+            /*
+             * Chamada da callback recebida
+             * enviando o resultado do fileReader
+             */
             callback(fileReader.result);
 
         };
