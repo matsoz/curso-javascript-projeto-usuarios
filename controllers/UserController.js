@@ -19,48 +19,54 @@ class UserController {
 
             event.preventDefault();
 
+            let btn = this.formEl.querySelector("[type = submit]");
+
+            btn.disabled = true;
+
             let values = this.getValues();
  
-            /* 
-             * Chamada de getPhoto com callback embutida
-             * recebendo um argumento e adicionando linha após fim de execução
-             * 
-             * A callback é passada como parâmetro, e executada quando desejado
-             * Nesse caso, executada no OnLoad, ou seja, após.
-             */
-            this.getPhoto((content) => {
-
-                values.photo = content;
-                this.addLine(values);
-
-            });
-
+            this.getPhoto().then(
+                (content) => {
+                    values.photo = content;
+                    this.addLine(values);
+                    this.formEl.reset();
+                    btn.disabled = false;
+                },
+                (e) => {
+                    console.error(e);
+                }
+            );
         });
     }
 
-    getPhoto(callback) {
+    getPhoto() {
 
-        let fileReader = new FileReader();
+        return new Promise((resolve, reject) => {
+            let fileReader = new FileReader();
 
-        let elements = [...this.formEl.elements].filter(item => {
-            if (item.name === 'photo') return item;
+            let elements = [...this.formEl.elements].filter(item => {
+                if (item.name === 'photo') return item;
+
+            });
+
+            let file = elements[0].files[0];
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+
+            fileReader.onerror = () => {
+                reject(e);
+            };
+
+            if (file) {
+                fileReader.readAsDataURL(file);
+            }
+            else {
+                resolve('dist/img/boxed-bg.jpg');
+            }
 
         });
-
-        let file = elements[0].files[0];
-
-        fileReader.onload = () => {
-
-            /*
-             * Chamada da callback recebida
-             * enviando o resultado do fileReader
-             */
-            callback(fileReader.result);
-
-        };
-
-        fileReader.readAsDataURL(file);
-
     }
 
     getValues() {
@@ -68,13 +74,15 @@ class UserController {
         let user = {};
 
         // Generate a JSON with the form data
-        
         [...this.formEl.elements].forEach(function (field, index) {
             if (field.name == "gender") {
                 if (field.checked) {
                     user.gender = field.value;
                     console.log(field.value);
                 }
+            }
+            else if (field.name == "admin") {
+                user[field.name] = field.checked;
             }
             else {
                 user[field.name] = field.value;
@@ -96,27 +104,28 @@ class UserController {
     addLine(dataUser) {
         console.log("addLine" + dataUser);
 
+        let tr = document.createElement('tr');
+
         /*
-         * O uso da crase ``caracteriza a Template String TS,
-         * onde é possível quebrar linhas no comando HTML embutido.
-         * 
-         * A tag ${xxx} configura um trecho de código em meio à Template String TS
-         */
-        this.tableEl.innerHTML = `<tr>
-                        <td>
+        * O uso da crase ``caracteriza a Template String TS,
+        * onde é possível quebrar linhas no comando HTML embutido.
+        *
+        * A tag ${xxx} configura um trecho de código em meio à Template String TS
+        */
+        tr.innerHTML = `<td>
                           <img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm">
                         </td>
                         <td>${dataUser.name}</td>
                         <td>${dataUser.email}</td>
-                        <td>${dataUser.admin}</td>
-                        <td>${dataUser.birth}</td>
+                        <td>${(dataUser.admin == true) ? 'Sim' : 'Nao' }</td>
+                        <td>${Utils.dateFormat(dataUser.register)}</td>
                         <td>
                           <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
                           <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-                        </td>
-                      </tr>`;
+                        </td>`;
+
+        this.tableEl.appendChild(tr);
+ 
     }
-
-
 
 }
