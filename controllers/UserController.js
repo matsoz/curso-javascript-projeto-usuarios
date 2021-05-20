@@ -24,7 +24,9 @@ class UserController {
             btn.disabled = true;
 
             let values = this.getValues();
- 
+
+            if (!values) return false;
+
             this.getPhoto().then(
                 (content) => {
                     values.photo = content;
@@ -72,9 +74,17 @@ class UserController {
     getValues() {
 
         let user = {};
+        let isValid = true;
 
         // Generate a JSON with the form data
         [...this.formEl.elements].forEach(function (field, index) {
+
+            if (['name', 'email', 'password'].indexOf(field.name) > -1
+                && !field.value) {
+                field.parentElement.classList.add('has-error');
+                isValid = false;
+            }
+
             if (field.name == "gender") {
                 if (field.checked) {
                     user.gender = field.value;
@@ -89,6 +99,10 @@ class UserController {
                 console.log(field.name);
             }
         });
+
+        if (!isValid) {
+            return false;
+        }
 
         return new User(
             user.name,
@@ -105,6 +119,8 @@ class UserController {
         console.log("addLine" + dataUser);
 
         let tr = document.createElement('tr');
+
+        tr.dataset.user = JSON.stringify(dataUser);
 
         /*
         * O uso da crase ``caracteriza a Template String TS,
@@ -125,7 +141,32 @@ class UserController {
                         </td>`;
 
         this.tableEl.appendChild(tr);
+
+        this.updateCount();
  
+    }
+
+    updateCount() {
+
+        let numberUsers = 0;
+        let numberAdmin = 0;
+
+        [...this.tableEl.children].forEach(tr => {
+
+            numberUsers++;
+
+            console.log(JSON.parse(tr.dataset.user));
+
+            let user = JSON.parse(tr.dataset.user);
+
+
+            if (user._admin) numberAdmin++;
+
+        });
+
+        document.querySelector("#number-users").innerHTML = numberUsers;
+        document.querySelector("#number-users-admin").innerHTML = numberAdmin;
+
     }
 
 }
