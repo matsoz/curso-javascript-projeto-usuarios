@@ -36,7 +36,6 @@ onEdit() {
 
         tr.dataset.user = JSON.stringify(values);
 
-
         this.getPhoto(this.formUpdateEl).then(
             (content) => {
 
@@ -221,8 +220,13 @@ selectAll(){
     users.forEach(dataUser => {
 
         let user =  new User();
+           
+        console.log("Debug1: " + users);
+        console.log("Debug4: " + dataUser._name);
 
-        user.loadFromJSON(users);
+        user.loadFromJSON(dataUser);
+
+        console.log("Debug3: " + user.name); //TODO: undefined value gotten here
 
         this.addLine(user);
 
@@ -236,7 +240,7 @@ insert(data){
  
     users.push(data);
 
-    sessionStorage.setItem("users",JSON.stringify(users));
+    sessionStorage.setItem('users',JSON.stringify(users));
 }
 
 addLine(dataUser) {
@@ -253,7 +257,7 @@ addLine(dataUser) {
     * A tag ${xxx} configura um trecho de c�digo em meio � Template String TS
     */
     tr.innerHTML = `<td>
-                        <img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm">
+                    <img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm">
                     </td>
                     <td>${dataUser.name}</td>
                     <td>${dataUser.email}</td>

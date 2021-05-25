@@ -84,6 +84,8 @@ class User {
 
     loadFromJSON(json){
 
+        console.log("JSON Debug:" + json)
+
         for(let name in json){
 
             switch(name){
