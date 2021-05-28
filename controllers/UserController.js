@@ -48,6 +48,8 @@ onEdit() {
 
                 user.loadFromJSON(result);
 
+                user.save();
+
                 this.getTr(user,tr);
 
                 this.updateCount();
@@ -92,7 +94,9 @@ onSubmit() {
             (content) => {
                 values.photo = content;
 
-                this.insert(values);
+                values.save();
+
+                //this.insert(values);
 
                 this.addLine(values);
 
@@ -182,21 +186,9 @@ getValues(formEl) {
         user.admin);
 }
 
-getUsersStorage(){
-    let users = [];
-
-    if(localStorage.getItem("users")){
-
-        users = JSON.parse(localStorage.getItem("users"));
-
-    }
-  
-    return users;
-}
-
 selectAll(){
 
-    let users = this.getUsersStorage();
+    let users = User.getUsersStorage();
 
     console.log("Users: ");
     console.log(users);
@@ -211,16 +203,6 @@ selectAll(){
 
     });
 
-}
-
-insert(data){
-    
-    let users = this.getUsersStorage();
- 
-    users.push(data);
-
-    //sessionStorage.setItem('users',JSON.stringify(users));
-    localStorage.setItem('users',JSON.stringify(users));
 }
 
 addLine(dataUser) {
@@ -272,6 +254,12 @@ addEventsTr(tr) {
         
         if(confirm("Deseja realmente excluir?")){
             
+            let user = new User();
+
+            user.loadFromJSON(JSON.parse(tr.dataset.user));
+
+            user.remove();
+
             tr.remove();
             
             this.updateCount();
